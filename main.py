@@ -1,15 +1,34 @@
+import os
+from typing import List, Tuple
+
 from database import PostgresDB
 from download_data import download_data
 
 from queryies import create_table_employees, get_employees
 
 Postgres = PostgresDB(
-    user='postgres',
-    password='postgres',
-    host='localhost',
-    port='5432',
-    database='postgres'
+    user=os.getenv('POSTGRES_USER', default='postgres'),
+    password=os.getenv('POSTGRES_PASSWORD', default='postgres'),
+    host=os.getenv('DB_HOST', default='localhost'),
+    port=os.getenv('DB_PORT', default=5432),
+    database=os.getenv('DB_NAME', default='postgres')
 )
+
+
+def conversion_to_response(employee_data: List[Tuple[int, str]]):
+    """Преобразует список в строку."""
+    office_name = ""
+    employee_names = []
+
+    for row in employee_data:
+        office, name = row
+
+        if office is None:
+            office_name = name
+        else:
+            employee_names.append(name)
+
+    return f"{office_name}: {', '.join(employee_names)}."
 
 
 def main():
@@ -33,7 +52,7 @@ def main():
                     result = cursor.fetchall()
 
                     if result:
-                        print("Результат выборки:", [result[0] for result in result])
+                        print(conversion_to_response(result))
                     else:
                         print("Запись с указанным номером не найдена.")
                 else:

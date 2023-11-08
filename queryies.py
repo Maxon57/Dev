@@ -9,10 +9,7 @@ FOREIGN KEY (parentId) REFERENCES employees(id)
 
 get_employees = f"""
 CREATE OR REPLACE FUNCTION get_employee(employee_id int)
-    RETURNS TABLE(id int, parentid int, name varchar, type int)
-    LANGUAGE plpgsql
-AS
-$$
+    RETURNS TABLE(id int, parentid int, name varchar, type int) AS $$
 DECLARE
     city_id numeric;
 begin
@@ -46,9 +43,9 @@ begin
   )
   SELECT *
   FROM employee_search
-  where employee_search.type = 3;
-end;
-$$;
+  where employee_search.type != 2
+  order by id asc;
+end; $$ LANGUAGE plpgsql;
 
-select get_employee(%s);
+select parentid, name FROM get_employee(%s);
 """
