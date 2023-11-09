@@ -3,6 +3,8 @@ import os
 
 from typing import List, Dict, Union
 
+from queryies import insert_query, check_query
+
 
 def open_file_json(file: str):
     """Открывает файл на чтение и возвращает данные."""
@@ -20,16 +22,12 @@ def download_data(cursor):
     try:
         data: List[Dict[Union[str, int, None]]] = open_file_json('data.json')
 
-        check_query = """SELECT COUNT(*) FROM employees;"""
         cursor.execute(check_query)
         count = cursor.fetchone()[0]
 
         if count == 0:
-            insert_query = """INSERT INTO employees 
-                            (id, parentId, name, type) 
-                            VALUES (%s, %s, %s, %s);"""
-
-            cursor.executemany(insert_query, list(map(lambda x: list(x.values()), data)))
+            cursor.executemany(insert_query,
+                               list(map(lambda x: list(x.values()), data)))
 
     except Exception:
         raise

@@ -7,6 +7,12 @@ FOREIGN KEY (parentId) REFERENCES employees(id)
 );
 """
 
+check_query = """SELECT COUNT(*) FROM employees;"""
+
+insert_query = """INSERT INTO employees 
+                (id, parentId, name, type) 
+                VALUES (%s, %s, %s, %s);"""
+
 get_employees = f"""
 CREATE OR REPLACE FUNCTION get_employee(employee_id int)
     RETURNS TABLE(id int, parentid int, name varchar, type int) AS $$
